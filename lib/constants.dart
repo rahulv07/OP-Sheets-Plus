@@ -1,5 +1,5 @@
 const double kCellHeight = 40;
-const double kCellWidth =100;
+const double kCellWidth = 120;
 
 List<String> kTitleColumn = List.generate(
   26,

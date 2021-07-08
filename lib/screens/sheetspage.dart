@@ -31,8 +31,9 @@ class _SheetsPageState extends State<SheetsPage> {
             _scrollOffsetX = scrollOffsetX;
             _scrollOffsetY = scrollOffsetY;
           },
-          cellDimensions: CellDimensions.uniform(width: 100, height: 40),
-          cellAlignments: CellAlignments.base,
+          cellDimensions:
+              CellDimensions.uniform(width: kCellWidth, height: kCellHeight),
+          legendCell: Cell(),
         ),
       ),
     );
@@ -40,10 +41,6 @@ class _SheetsPageState extends State<SheetsPage> {
 }
 
 class Cell extends StatelessWidget {
-  const Cell({
-    Key? key,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,8 +62,8 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
-      width: 100,
+      height: kCellHeight,
+      width: kCellWidth,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
       ),
