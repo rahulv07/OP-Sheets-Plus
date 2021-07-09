@@ -1,9 +1,6 @@
+import 'package:flutter/material.dart';
+
 const double kCellHeight = 40;
 const double kCellWidth = 120;
-
-List<String> kTitleColumn = List.generate(
-  26,
-  (i) => String.fromCharCode(i + 65),
-);
-
-List<int> kTitleRow = List.generate(100, (i) => i + 1);
+const Color kInactiveColor = Colors.black45;
+const Color kActiveColor = Colors.red;
