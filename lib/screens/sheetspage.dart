@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sheets_temp/providers/sheetnotifier.dart';
+import 'package:sheets_temp/widgets/cell.dart';
+import 'package:sheets_temp/widgets/header.dart';
 import 'package:table_sticky_headers/table_sticky_headers.dart';
-
 import '../constants.dart';
 
 class SheetsPage extends StatefulWidget {
@@ -13,68 +16,47 @@ class SheetsPage extends StatefulWidget {
 class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetX = 0.0;
   double _scrollOffsetY = 0.0;
+  int prevCol = -1;
+  int prevRow = -1;
 
   @override
   Widget build(BuildContext context) {
+    SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
         child: StickyHeadersTable(
-          columnsLength: kTitleColumn.length,
-          rowsLength: kTitleRow.length,
-          columnsTitleBuilder: (i) => Header(type: kTitleColumn, index: i),
-          rowsTitleBuilder: (i) => Header(type: kTitleRow, index: i),
-          contentCellBuilder: (i, j) => Cell(),
+          columnsLength: sheetNotifier.columnHeaders.length,
+          rowsLength: sheetNotifier.rowHeaders.length,
+          columnsTitleBuilder: (i) =>
+              Header(type: sheetNotifier.columnHeaders, index: i),
+          rowsTitleBuilder: (i) =>
+              Header(type: sheetNotifier.rowHeaders, index: i),
+          contentCellBuilder: (i, j) => sheetNotifier.contentCell[j][i],
           initialScrollOffsetX: _scrollOffsetX,
           initialScrollOffsetY: _scrollOffsetY,
           onEndScrolling: (scrollOffsetX, scrollOffsetY) {
             _scrollOffsetX = scrollOffsetX;
             _scrollOffsetY = scrollOffsetY;
           },
-          cellDimensions: CellDimensions.uniform(width: 100, height: 40),
-          cellAlignments: CellAlignments.base,
+          onContentCellPressed: (i, j) {
+            if (prevCol > -1 && prevRow > -1) {
+              sheetNotifier.selectCell(
+                  currentCol: i,
+                  currentRow: j,
+                  prevCol: prevCol,
+                  prevRow: prevRow);
+            } else {
+              sheetNotifier.selectCell(currentCol: i, currentRow: j);
+            }
+            prevCol = i;
+            prevRow = j;
+            print('$j $i');
+          },
+          cellDimensions:
+              CellDimensions.uniform(width: kCellWidth, height: kCellHeight),
+          legendCell: Cell(col: 0, row: 0, isSelected: false),
         ),
-      ),
-    );
-  }
-}
-
-class Cell extends StatelessWidget {
-  const Cell({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: kCellHeight,
-      width: kCellWidth,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-      ),
-    );
-  }
-}
-
-class Header extends StatelessWidget {
-  final List type;
-  final int index;
-
-  Header({required this.type, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      width: 100,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-      ),
-      child: Text(
-        '${type[this.index]}',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 25),
       ),
     );
   }
