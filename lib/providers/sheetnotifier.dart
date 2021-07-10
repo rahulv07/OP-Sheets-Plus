@@ -20,19 +20,22 @@ class SheetNotifier extends ChangeNotifier {
     100,
     (i) => List.generate(
       26,
-      (j) => Cell(col: j + 1, row: i + 1, isSelected: false),
+      (j) => Cell(col: j + 1, row: i + 1, isSelected: false, data: ''),
     ),
   );
 
   List<List<Cell>> get contentCell => _cellMatrix;
 
-  selectCell({currentCol, currentRow, prevCol, prevRow}) {
-    if (prevCol != null && prevRow != null) {
+  selectCell({currentCol, currentRow, prevCol, prevRow, newdata}) {
+    if (prevCol != null && prevRow != null && newdata != null) {
       _cellMatrix[prevRow][prevCol] =
-          Cell(col: prevCol, row: prevRow, isSelected: false);
+          Cell(col: prevCol, row: prevRow, isSelected: false, data: newdata);
     }
-    _cellMatrix[currentRow][currentCol] =
-        Cell(col: currentCol, row: currentRow, isSelected: true);
+    _cellMatrix[currentRow][currentCol] = Cell(
+        col: currentCol,
+        row: currentRow,
+        isSelected: true,
+        data: _cellMatrix[currentRow][currentCol].data);
     notifyListeners();
   }
 }

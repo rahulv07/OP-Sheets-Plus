@@ -5,7 +5,12 @@ class Cell extends StatelessWidget {
   final int col;
   final int row;
   final bool isSelected;
-  Cell({required this.col, required this.row, required this.isSelected});
+  final String data;
+  Cell(
+      {required this.col,
+      required this.row,
+      required this.isSelected,
+      required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,7 @@ class Cell extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: isSelected ? kActiveColor : kInactiveColor),
       ),
-      child: Text(''),
+      child: Text(data, textAlign: TextAlign.center),
     );
   }
 }
