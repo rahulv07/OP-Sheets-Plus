@@ -18,11 +18,48 @@ class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetY = 0.0;
   int prevCol = -1;
   int prevRow = -1;
+  String cellData = '';
+
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void displayPersistentBottomSheet() {
+    _scaffoldKey.currentState?.showBottomSheet<void>((BuildContext context) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.10,
+        padding: EdgeInsets.all(10),
+        color: Colors.blueGrey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter text',
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+                onChanged: (enteredText) {
+                  cellData = enteredText;
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(),
       body: SafeArea(
         child: StickyHeadersTable(
@@ -45,17 +82,21 @@ class _SheetsPageState extends State<SheetsPage> {
                   currentCol: i,
                   currentRow: j,
                   prevCol: prevCol,
-                  prevRow: prevRow);
-            } else {
+                  prevRow: prevRow,
+                  newdata: cellData);
+            }
+            //If selecting a cell for the first time in a sheet
+            else {
               sheetNotifier.selectCell(currentCol: i, currentRow: j);
             }
             prevCol = i;
             prevRow = j;
             print('$j $i');
+            displayPersistentBottomSheet();
           },
           cellDimensions:
               CellDimensions.uniform(width: kCellWidth, height: kCellHeight),
-          legendCell: Cell(col: 0, row: 0, isSelected: false),
+          legendCell: Cell(col: 0, row: 0, isSelected: false, data: ''),
         ),
       ),
     );
