@@ -7,8 +7,6 @@ import 'package:table_sticky_headers/table_sticky_headers.dart';
 import '../constants.dart';
 
 class SheetsPage extends StatefulWidget {
-  const SheetsPage({Key? key}) : super(key: key);
-
   @override
   _SheetsPageState createState() => _SheetsPageState();
 }
@@ -72,6 +70,8 @@ class _SheetsPageState extends State<SheetsPage> {
   @override
   Widget build(BuildContext context) {
     SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
+    int colCount = sheetNotifier.getColCount;
+    int rowCount = sheetNotifier.getRowCount;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -109,13 +109,14 @@ class _SheetsPageState extends State<SheetsPage> {
               verticalTitleController: _verticalTitleController,
               horizontalBodyController: _horizBodyController,
               horizontalTitleController: _horizTitleController),
-          columnsLength: sheetNotifier.columnHeaders.length,
-          rowsLength: sheetNotifier.rowHeaders.length,
+          columnsLength: sheetNotifier.getColumnHeaders(colCount).length,
+          rowsLength: sheetNotifier.getRowHeaders(rowCount).length,
           columnsTitleBuilder: (i) =>
-              Header(type: sheetNotifier.columnHeaders, index: i),
+              Header(type: sheetNotifier.getColumnHeaders(colCount), index: i),
           rowsTitleBuilder: (i) =>
-              Header(type: sheetNotifier.rowHeaders, index: i),
-          contentCellBuilder: (i, j) => sheetNotifier.contentCell[j][i],
+              Header(type: sheetNotifier.getRowHeaders(rowCount), index: i),
+          contentCellBuilder: (i, j) => sheetNotifier.getContentCell(
+              colcount: colCount, rowcount: rowCount)[j][i],
           initialScrollOffsetX: _scrollOffsetX,
           initialScrollOffsetY: _scrollOffsetY,
           onEndScrolling: (scrollOffsetX, scrollOffsetY) {

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sheets_temp/providers/sheetnotifier.dart';
+import 'package:sheets_temp/screens/sheetspage.dart';
+
+enum Header { Row, Column }
 
 class NewSheet extends StatelessWidget {
   @override
@@ -7,10 +12,11 @@ class NewSheet extends StatelessWidget {
         child: Column(
       children: [
         Counter(
-          type: 'Rows ',
-          startCount: 10,
+          header: Header.Row,
         ),
-        Counter(type: 'Columns', startCount: 10),
+        Counter(
+          header: Header.Column,
+        ),
         Container(
           margin: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
           decoration: BoxDecoration(
@@ -26,7 +32,14 @@ class NewSheet extends StatelessWidget {
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SheetsPage(),
+              ),
+            );
+          },
           child: Text('Create Spreadsheet'),
         )
       ],
@@ -34,18 +47,15 @@ class NewSheet extends StatelessWidget {
   }
 }
 
-class Counter extends StatefulWidget {
-  final String type;
-  final int startCount;
-  Counter({required this.type, required this.startCount});
-
-  @override
-  _CounterState createState() => _CounterState();
-}
-
-class _CounterState extends State<Counter> {
+class Counter extends StatelessWidget {
+  final Header header;
+  Counter({required this.header});
   @override
   Widget build(BuildContext context) {
+    SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
+    int count = (header == Header.Row)
+        ? sheetNotifier.getRowCount
+        : sheetNotifier.getColCount;
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
@@ -53,18 +63,28 @@ class _CounterState extends State<Counter> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            widget.type + ':',
+            (header == Header.Row) ? 'Rows:' : 'Columns:',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           TextButton(
             onPressed: () {
-              setState(() {});
+              count--;
+              if (header == Header.Row)
+                sheetNotifier.setRowCount(count);
+              else
+                sheetNotifier.setColCount(count);
             },
             child: Icon(Icons.remove),
           ),
-          Text('${widget.startCount}'),
+          Text('$count'),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              count++;
+              if (header == Header.Row)
+                sheetNotifier.setRowCount(count);
+              else
+                sheetNotifier.setColCount(count);
+            },
             child: Icon(Icons.add),
           ),
         ],
