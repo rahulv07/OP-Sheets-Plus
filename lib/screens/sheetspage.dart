@@ -7,8 +7,6 @@ import 'package:table_sticky_headers/table_sticky_headers.dart';
 import '../constants.dart';
 
 class SheetsPage extends StatefulWidget {
-  const SheetsPage({Key? key}) : super(key: key);
-
   @override
   _SheetsPageState createState() => _SheetsPageState();
 }
@@ -18,7 +16,21 @@ class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetY = 0.0;
   int prevCol = -1;
   int prevRow = -1;
+
   String cellData = '';
+  late ScrollController _verticalTitleController,
+      _verticalBodyController,
+      _horizTitleController,
+      _horizBodyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _verticalTitleController = ScrollController();
+    _verticalBodyController = ScrollController();
+    _horizBodyController = ScrollController();
+    _horizTitleController = ScrollController();
+  }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -58,18 +70,53 @@ class _SheetsPageState extends State<SheetsPage> {
   @override
   Widget build(BuildContext context) {
     SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
+    int colCount = sheetNotifier.getColCount;
+    int rowCount = sheetNotifier.getRowCount;
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Sheet'),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              'B',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 25),
+            ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              'I',
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white,
+                  fontSize: 25),
+            ),
+          ),
+          TextButton(
+              onPressed: () {},
+              child: Icon(Icons.color_lens, color: Colors.white, size: 25)),
+        ],
+      ),
       body: SafeArea(
         child: StickyHeadersTable(
-          columnsLength: sheetNotifier.columnHeaders.length,
-          rowsLength: sheetNotifier.rowHeaders.length,
+          scrollControllers: ScrollControllers(
+              verticalBodyController: _verticalBodyController,
+              verticalTitleController: _verticalTitleController,
+              horizontalBodyController: _horizBodyController,
+              horizontalTitleController: _horizTitleController),
+          columnsLength: sheetNotifier.getColumnHeaders(colCount).length,
+          rowsLength: sheetNotifier.getRowHeaders(rowCount).length,
           columnsTitleBuilder: (i) =>
-              Header(type: sheetNotifier.columnHeaders, index: i),
+              Header(type: sheetNotifier.getColumnHeaders(colCount), index: i),
           rowsTitleBuilder: (i) =>
-              Header(type: sheetNotifier.rowHeaders, index: i),
-          contentCellBuilder: (i, j) => sheetNotifier.contentCell[j][i],
+              Header(type: sheetNotifier.getRowHeaders(rowCount), index: i),
+          contentCellBuilder: (i, j) => sheetNotifier.getContentCell(
+              colcount: colCount, rowcount: rowCount)[j][i],
           initialScrollOffsetX: _scrollOffsetX,
           initialScrollOffsetY: _scrollOffsetY,
           onEndScrolling: (scrollOffsetX, scrollOffsetY) {
@@ -84,6 +131,7 @@ class _SheetsPageState extends State<SheetsPage> {
                   prevCol: prevCol,
                   prevRow: prevRow,
                   newdata: cellData);
+              cellData = sheetNotifier.cellData(col: i, row: j);
             }
             //If selecting a cell for the first time in a sheet
             else {
