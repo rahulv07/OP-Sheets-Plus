@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:sheets_temp/widgets/cell.dart';
 
@@ -12,12 +11,12 @@ class SheetNotifier extends ChangeNotifier {
   UnmodifiableListView<String> get columnHeaders =>
       UnmodifiableListView(_titleColumn);
 
-  List<int> _titleRow = List.generate(100, (i) => i + 1);
+  List<int> _titleRow = List.generate(50, (i) => i + 1);
 
   UnmodifiableListView<int> get rowHeaders => UnmodifiableListView(_titleRow);
 
   List<List<Cell>> _cellMatrix = List.generate(
-    100,
+    50,
     (i) => List.generate(
       26,
       (j) => Cell(col: j + 1, row: i + 1, isSelected: false, data: ''),
@@ -25,6 +24,8 @@ class SheetNotifier extends ChangeNotifier {
   );
 
   List<List<Cell>> get contentCell => _cellMatrix;
+
+  String cellData({row, col}) => _cellMatrix[row][col].data;
 
   selectCell({currentCol, currentRow, prevCol, prevRow, newdata}) {
     if (prevCol != null && prevRow != null && newdata != null) {

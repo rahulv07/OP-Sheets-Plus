@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sheets_temp/screens/sheetspage.dart';
+import 'package:sheets_temp/widgets/newSheet.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,18 +10,28 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
+      appBar: AppBar(
+        title: Text('Sheets+'),
+      ),
+      body: Container(),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(25.0),
         child: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SheetsPage(),
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: NewSheet(),
                 ),
-              );
-            }),
+              ),
+            );
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }

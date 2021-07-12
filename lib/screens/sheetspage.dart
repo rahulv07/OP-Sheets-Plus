@@ -18,7 +18,21 @@ class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetY = 0.0;
   int prevCol = -1;
   int prevRow = -1;
+
   String cellData = '';
+  late ScrollController _verticalTitleController,
+      _verticalBodyController,
+      _horizTitleController,
+      _horizBodyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _verticalTitleController = ScrollController();
+    _verticalBodyController = ScrollController();
+    _horizBodyController = ScrollController();
+    _horizTitleController = ScrollController();
+  }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,9 +74,41 @@ class _SheetsPageState extends State<SheetsPage> {
     SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Sheet'),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              'B',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 25),
+            ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              'I',
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white,
+                  fontSize: 25),
+            ),
+          ),
+          TextButton(
+              onPressed: () {},
+              child: Icon(Icons.color_lens, color: Colors.white, size: 25)),
+        ],
+      ),
       body: SafeArea(
         child: StickyHeadersTable(
+          scrollControllers: ScrollControllers(
+              verticalBodyController: _verticalBodyController,
+              verticalTitleController: _verticalTitleController,
+              horizontalBodyController: _horizBodyController,
+              horizontalTitleController: _horizTitleController),
           columnsLength: sheetNotifier.columnHeaders.length,
           rowsLength: sheetNotifier.rowHeaders.length,
           columnsTitleBuilder: (i) =>
@@ -84,6 +130,7 @@ class _SheetsPageState extends State<SheetsPage> {
                   prevCol: prevCol,
                   prevRow: prevRow,
                   newdata: cellData);
+              cellData = sheetNotifier.cellData(col: i, row: j);
             }
             //If selecting a cell for the first time in a sheet
             else {
