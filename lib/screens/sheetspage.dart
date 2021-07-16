@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sheets_temp/providers/excelnotifer.dart';
 import 'package:sheets_temp/providers/sheetnotifier.dart';
 import 'package:sheets_temp/widgets/cell.dart';
 import 'package:sheets_temp/widgets/header.dart';
@@ -14,10 +17,11 @@ class SheetsPage extends StatefulWidget {
 class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetX = 0.0;
   double _scrollOffsetY = 0.0;
-  int prevCol = -1;
-  int prevRow = -1;
+  bool _firstBuild = true;
 
   String cellData = '';
+  bool isBold = false;
+  bool isItalic = false;
   late ScrollController _verticalTitleController,
       _verticalBodyController,
       _horizTitleController,
@@ -70,31 +74,73 @@ class _SheetsPageState extends State<SheetsPage> {
   @override
   Widget build(BuildContext context) {
     SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
+    ExcelNotifier excelNotifier = Provider.of<ExcelNotifier>(context);
+
     int colCount = sheetNotifier.getColCount;
     int rowCount = sheetNotifier.getRowCount;
+
+    int currCol = sheetNotifier.currCol;
+    int currRow = sheetNotifier.currRow;
+    int prevRow = sheetNotifier.prevRow;
+    int prevCol = sheetNotifier.prevCol;
+
+    excelNotifier.sheet = 'Sheet 1';
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Sheet'),
+        title: Text('${excelNotifier.getExcelName}'),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              var excel = excelNotifier.getExcel;
+              excel.encode().then((value) async {
+                Directory? storageDir = await getExternalStorageDirectory();
+                File file = File(
+                    storageDir!.path + '/${excelNotifier.getExcelName}.xlsx');
+                file
+                  ..createSync(recursive: true)
+                  ..writeAsBytesSync(value);
+
+                if (await file.exists()) {
+                  print(file.path);
+                }
+              });
+            },
+            child: Icon(Icons.save, size: 25, color: Colors.white),
+          ),
+          TextButton(
+            onPressed: () {
+              sheetNotifier.setBoldCell(col: currCol, row: currRow);
+            },
             child: Text(
               'B',
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 25),
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: (_firstBuild)
+                    ? Colors.white
+                    : sheetNotifier.getBoldData(row: currRow, col: currCol)
+                        ? Colors.red
+                        : Colors.white,
+              ),
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              sheetNotifier.setItalicCell(col: currCol, row: currRow);
+            },
             child: Text(
               'I',
               style: TextStyle(
-                  fontStyle: FontStyle.italic,
-                  color: Colors.white,
-                  fontSize: 25),
+                fontStyle: FontStyle.italic,
+                color: (_firstBuild)
+                    ? Colors.white
+                    : sheetNotifier.getItalicData(row: currRow, col: currCol)
+                        ? Colors.red
+                        : Colors.white,
+                fontSize: 25,
+              ),
             ),
           ),
           TextButton(
@@ -124,27 +170,43 @@ class _SheetsPageState extends State<SheetsPage> {
             _scrollOffsetY = scrollOffsetY;
           },
           onContentCellPressed: (i, j) {
+            sheetNotifier.currCol = i;
+            sheetNotifier.currRow = j;
             if (prevCol > -1 && prevRow > -1) {
               sheetNotifier.selectCell(
-                  currentCol: i,
-                  currentRow: j,
-                  prevCol: prevCol,
-                  prevRow: prevRow,
-                  newdata: cellData);
+                currentCol: i,
+                currentRow: j,
+                prevCol: prevCol,
+                prevRow: prevRow,
+                newdata: cellData,
+              );
               cellData = sheetNotifier.cellData(col: i, row: j);
+              isBold = sheetNotifier.getBoldData(col: i, row: j);
+              isItalic = sheetNotifier.getItalicData(col: i, row: j);
             }
             //If selecting a cell for the first time in a sheet
             else {
               sheetNotifier.selectCell(currentCol: i, currentRow: j);
             }
-            prevCol = i;
-            prevRow = j;
+            sheetNotifier.prevCol = i;
+            sheetNotifier.prevRow = j;
             print('$j $i');
             displayPersistentBottomSheet();
+            excelNotifier.setCellValue(
+                col: i + 1,
+                row: j + 1,
+                value: sheetNotifier.cellData(col: i, row: j));
+            _firstBuild = false;
           },
           cellDimensions:
               CellDimensions.uniform(width: kCellWidth, height: kCellHeight),
-          legendCell: Cell(col: 0, row: 0, isSelected: false, data: ''),
+          legendCell: Cell(
+              col: 0,
+              row: 0,
+              isSelected: false,
+              data: '',
+              isBold: false,
+              isItalic: false),
         ),
       ),
     );

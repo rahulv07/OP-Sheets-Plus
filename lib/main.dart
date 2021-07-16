@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sheets_temp/providers/excelnotifer.dart';
 import 'package:sheets_temp/providers/sheetnotifier.dart';
 import 'package:sheets_temp/screens/homepage.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,9 @@ void main() => runApp(
         providers: [
           ChangeNotifierProvider(
             create: (_) => SheetNotifier(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ExcelNotifier(),
           ),
         ],
         child: MyApp(),

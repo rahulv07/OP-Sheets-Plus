@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sheets_temp/widgets/newSheet.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -7,6 +10,48 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    createFolder();
+    super.initState();
+  }
+
+  Future<bool> _requestPermission(Permission permission) async {
+    if (await permission.isGranted)
+      return true;
+    else {
+      var result = await permission.request();
+      if (result == PermissionStatus.granted) return true;
+    }
+    return false;
+  }
+
+  void createFolder() async {
+    Directory? directory;
+    try {
+      if (Platform.isAndroid) {
+        if (await _requestPermission(Permission.storage)) {
+          directory = await getExternalStorageDirectory();
+        }
+
+        if (!await directory!.exists()) await directory.create(recursive: true);
+        if (await directory.exists()) {
+          print(directory);
+
+          List contents = await directory.list().toList();
+
+          if (contents.isNotEmpty) {
+            for (var content in contents) {
+              print(content.path);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
