@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sheets_temp/providers/excelnotifer.dart';
 import 'package:sheets_temp/providers/sheetnotifier.dart';
 import 'package:sheets_temp/screens/sheetspage.dart';
 
@@ -8,6 +9,7 @@ enum Header { Row, Column }
 class NewSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ExcelNotifier excelNotifier = Provider.of<ExcelNotifier>(context);
     return Container(
         child: Column(
       children: [
@@ -29,10 +31,14 @@ class NewSheet extends StatelessWidget {
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
             ),
+            onChanged: (name) {
+              excelNotifier.excelName = name;
+            },
           ),
         ),
         ElevatedButton(
           onPressed: () {
+            Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
