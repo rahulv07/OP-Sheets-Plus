@@ -92,20 +92,19 @@ class _SheetsPageState extends State<SheetsPage> {
         title: Text('${excelNotifier.getExcelName}'),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               var excel = excelNotifier.getExcel;
-              excel.encode().then((value) async {
-                Directory? storageDir = await getExternalStorageDirectory();
-                File file = File(
-                    storageDir!.path + '/${excelNotifier.getExcelName}.xlsx');
-                file
-                  ..createSync(recursive: true)
-                  ..writeAsBytesSync(value);
+              var value = excel.save();
+              Directory? storageDir = await getExternalStorageDirectory();
+              File file = File(
+                  storageDir!.path + '/${excelNotifier.getExcelName}.xlsx');
+              file
+                ..createSync(recursive: true)
+                ..writeAsBytesSync(value!);
 
-                if (await file.exists()) {
-                  print(file.path);
-                }
-              });
+              if (await file.exists()) {
+                print(file.path);
+              }
             },
             child: Icon(Icons.save, size: 25, color: Colors.white),
           ),
