@@ -14,10 +14,14 @@ class ExcelNotifier extends ChangeNotifier {
 
   String get getExcelName => _excelName;
 
-  set sheet(name) {
-    _sheet = _excel[name];
-    notifyListeners();
+  createSheet() {
+    _sheet = _excel['Sheet1'];
   }
+
+// set sheet(name) {
+//     _excel.link('Sheet 1', name);
+//     notifyListeners();
+//   }
 
   Sheet get getSheet => _sheet;
 

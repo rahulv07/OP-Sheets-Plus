@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage> {
     return false;
   }
 
+  List contents = [];
   void createFolder() async {
     Directory? directory;
     try {
@@ -38,7 +39,11 @@ class _HomePageState extends State<HomePage> {
         if (await directory.exists()) {
           print(directory);
 
-          List contents = await directory.list().toList();
+          var allFiles = await directory.list().toList();
+
+          setState(() {
+            contents = allFiles;
+          });
 
           if (contents.isNotEmpty) {
             for (var content in contents) {
@@ -58,7 +63,41 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Sheets+'),
       ),
-      body: Container(),
+      body: (contents.isEmpty)
+          ? Center(child: CircularProgressIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.all(10),
+              itemCount: contents.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount:
+                    MediaQuery.of(context).orientation == Orientation.landscape
+                        ? 3
+                        : 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+                childAspectRatio: (2 / 1),
+              ),
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    print('Tapped $index');
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                    ),
+                    //height: 35,
+                    //width: MediaQuery.of(context).size.width*0.4,
+                    child: Center(
+                      child: Text(contents[index].path.split("/").last),
+                    ),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(25.0),
         child: FloatingActionButton(
