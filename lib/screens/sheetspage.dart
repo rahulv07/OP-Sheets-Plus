@@ -84,7 +84,7 @@ class _SheetsPageState extends State<SheetsPage> {
     int prevRow = sheetNotifier.prevRow;
     int prevCol = sheetNotifier.prevCol;
 
-    excelNotifier.sheet = 'Sheet 1';
+    excelNotifier.createSheet();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -111,6 +111,11 @@ class _SheetsPageState extends State<SheetsPage> {
           TextButton(
             onPressed: () {
               sheetNotifier.setBoldCell(col: currCol, row: currRow);
+              excelNotifier.setCellBold(
+                  col: currCol,
+                  row: currRow,
+                  isBold:
+                      sheetNotifier.getBoldData(row: currRow, col: currCol));
             },
             child: Text(
               'B',
@@ -128,6 +133,11 @@ class _SheetsPageState extends State<SheetsPage> {
           TextButton(
             onPressed: () {
               sheetNotifier.setItalicCell(col: currCol, row: currRow);
+              excelNotifier.setCellItalic(
+                  col: currCol,
+                  row: currRow,
+                  isItalic:
+                      sheetNotifier.getItalicData(col: currCol, row: currRow));
             },
             child: Text(
               'I',
@@ -192,9 +202,7 @@ class _SheetsPageState extends State<SheetsPage> {
             print('$j $i');
             displayPersistentBottomSheet();
             excelNotifier.setCellValue(
-                col: i + 1,
-                row: j + 1,
-                value: sheetNotifier.cellData(col: i, row: j));
+                col: i, row: j, value: sheetNotifier.cellData(col: i, row: j));
             _firstBuild = false;
           },
           cellDimensions:
