@@ -141,7 +141,6 @@ class SheetNotifier extends ChangeNotifier {
       isBold: currentCell.isBold,
       isItalic: !currentCell.isItalic,
     );
-
     notifyListeners();
   }
 

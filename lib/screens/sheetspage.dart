@@ -111,6 +111,11 @@ class _SheetsPageState extends State<SheetsPage> {
           TextButton(
             onPressed: () {
               sheetNotifier.setBoldCell(col: currCol, row: currRow);
+              excelNotifier.setCellBold(
+                  col: currCol,
+                  row: currRow,
+                  isBold:
+                      sheetNotifier.getBoldData(row: currRow, col: currCol));
             },
             child: Text(
               'B',
@@ -128,6 +133,11 @@ class _SheetsPageState extends State<SheetsPage> {
           TextButton(
             onPressed: () {
               sheetNotifier.setItalicCell(col: currCol, row: currRow);
+              excelNotifier.setCellItalic(
+                  col: currCol,
+                  row: currRow,
+                  isItalic:
+                      sheetNotifier.getItalicData(col: currCol, row: currRow));
             },
             child: Text(
               'I',

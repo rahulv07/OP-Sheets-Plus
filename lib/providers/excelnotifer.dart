@@ -31,4 +31,18 @@ class ExcelNotifier extends ChangeNotifier {
     cell.value = value;
     notifyListeners();
   }
+
+  setCellItalic({col, row, isItalic}) {
+    var cell = _sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
+    cell.cellStyle = CellStyle(italic: isItalic);
+    notifyListeners();
+  }
+
+  setCellBold({col, row, isBold}) {
+    var cell = _sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
+    cell.cellStyle = CellStyle(bold: isBold);
+    notifyListeners();
+  }
 }

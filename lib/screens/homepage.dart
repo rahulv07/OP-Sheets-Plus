@@ -89,8 +89,6 @@ class _HomePageState extends State<HomePage> {
                         Radius.circular(15),
                       ),
                     ),
-                    //height: 35,
-                    //width: MediaQuery.of(context).size.width*0.4,
                     child: Center(
                       child: Text(contents[index].path.split("/").last),
                     ),
