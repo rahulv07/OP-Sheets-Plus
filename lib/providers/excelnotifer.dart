@@ -18,11 +18,6 @@ class ExcelNotifier extends ChangeNotifier {
     _sheet = _excel['Sheet1'];
   }
 
-// set sheet(name) {
-//     _excel.link('Sheet 1', name);
-//     notifyListeners();
-//   }
-
   Sheet get getSheet => _sheet;
 
   setCellValue({col, row, value}) {
@@ -32,17 +27,17 @@ class ExcelNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  setCellItalic({col, row, isItalic}) {
+  setCellItalic({col, row, isItalic, isBold}) {
     var cell = _sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
-    cell.cellStyle = CellStyle(italic: isItalic);
+    cell.cellStyle = CellStyle(italic: isItalic, bold: isBold);
     notifyListeners();
   }
 
-  setCellBold({col, row, isBold}) {
+  setCellBold({col, row, isBold, isItalic}) {
     var cell = _sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
-    cell.cellStyle = CellStyle(bold: isBold);
+    cell.cellStyle = CellStyle(bold: isBold, italic: isItalic);
     notifyListeners();
   }
 }

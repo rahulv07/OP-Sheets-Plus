@@ -19,7 +19,7 @@ class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetY = 0.0;
   bool _firstBuild = true;
 
-  String cellData = '';
+  //String cellData = '';
   bool isBold = false;
   bool isItalic = false;
   late ScrollController _verticalTitleController,
@@ -40,6 +40,8 @@ class _SheetsPageState extends State<SheetsPage> {
 
   void displayPersistentBottomSheet() {
     _scaffoldKey.currentState?.showBottomSheet<void>((BuildContext context) {
+      SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
+      ExcelNotifier excelNotifier = Provider.of<ExcelNotifier>(context);
       return Container(
         height: MediaQuery.of(context).size.height * 0.10,
         padding: EdgeInsets.all(10),
@@ -61,7 +63,12 @@ class _SheetsPageState extends State<SheetsPage> {
                   focusedBorder: InputBorder.none,
                 ),
                 onChanged: (enteredText) {
-                  cellData = enteredText;
+                  //cellData = enteredText;
+                  sheetNotifier.setCellData = enteredText;
+                  excelNotifier.setCellValue(
+                      row: sheetNotifier.currRow,
+                      col: sheetNotifier.currCol,
+                      value: enteredText);
                 },
               ),
             )
@@ -114,8 +121,9 @@ class _SheetsPageState extends State<SheetsPage> {
               excelNotifier.setCellBold(
                   col: currCol,
                   row: currRow,
-                  isBold:
-                      sheetNotifier.getBoldData(row: currRow, col: currCol));
+                  isBold: sheetNotifier.getBoldData(row: currRow, col: currCol),
+                  isItalic:
+                      sheetNotifier.getItalicData(col: currCol, row: currRow));
             },
             child: Text(
               'B',
@@ -134,10 +142,12 @@ class _SheetsPageState extends State<SheetsPage> {
             onPressed: () {
               sheetNotifier.setItalicCell(col: currCol, row: currRow);
               excelNotifier.setCellItalic(
-                  col: currCol,
-                  row: currRow,
-                  isItalic:
-                      sheetNotifier.getItalicData(col: currCol, row: currRow));
+                col: currCol,
+                row: currRow,
+                isItalic:
+                    sheetNotifier.getItalicData(col: currCol, row: currRow),
+                isBold: sheetNotifier.getBoldData(col: currCol, row: currRow),
+              );
             },
             child: Text(
               'I',
@@ -187,9 +197,8 @@ class _SheetsPageState extends State<SheetsPage> {
                 currentRow: j,
                 prevCol: prevCol,
                 prevRow: prevRow,
-                newdata: cellData,
               );
-              cellData = sheetNotifier.cellData(col: i, row: j);
+              //cellData = sheetNotifier.cellData(col: i, row: j);
               isBold = sheetNotifier.getBoldData(col: i, row: j);
               isItalic = sheetNotifier.getItalicData(col: i, row: j);
             }

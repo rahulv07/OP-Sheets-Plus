@@ -27,6 +27,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   List contents = [];
+  bool isFileCheckOver = false;
+
   void createFolder() async {
     Directory? directory;
     try {
@@ -43,6 +45,7 @@ class _HomePageState extends State<HomePage> {
 
           setState(() {
             contents = allFiles;
+            isFileCheckOver = true;
           });
 
           if (contents.isNotEmpty) {
@@ -63,39 +66,43 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Sheets+'),
       ),
-      body: (contents.isEmpty)
+      body: (!isFileCheckOver)
           ? Center(child: CircularProgressIndicator())
-          : GridView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: contents.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                    MediaQuery.of(context).orientation == Orientation.landscape
+          : (contents.isEmpty)
+              ? Center(
+                  child: Text('Folder is empty'),
+                )
+              : GridView.builder(
+                  padding: EdgeInsets.all(10),
+                  itemCount: contents.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: MediaQuery.of(context).orientation ==
+                            Orientation.landscape
                         ? 3
                         : 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 15,
-                childAspectRatio: (2 / 1),
-              ),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    print('Tapped $index');
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(contents[index].path.split("/").last),
-                    ),
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: (2 / 1),
                   ),
-                );
-              },
-            ),
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        print('Tapped $index');
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(contents[index].path.split("/").last),
+                        ),
+                      ),
+                    );
+                  },
+                ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(25.0),
         child: FloatingActionButton(

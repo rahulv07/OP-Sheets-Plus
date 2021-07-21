@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:sheets_temp/constants.dart';
 import 'package:sheets_temp/widgets/cell.dart';
 
 class SheetNotifier extends ChangeNotifier {
@@ -94,13 +93,13 @@ class SheetNotifier extends ChangeNotifier {
   int get currRow => _currRow;
   int get currCol => _currCol;
 
-  selectCell({currentCol, currentRow, prevCol, prevRow, newdata}) {
-    if (prevCol != null && prevRow != null && newdata != null) {
+  selectCell({currentCol, currentRow, prevCol, prevRow}) {
+    if (prevCol != null && prevRow != null) {
       _cellMatrix[prevRow][prevCol] = Cell(
           col: prevCol,
           row: prevRow,
           isSelected: false,
-          data: newdata,
+          data: _cellMatrix[prevRow][prevCol].data,
           isBold: _cellMatrix[prevRow][prevCol].isBold,
           isItalic: _cellMatrix[prevRow][prevCol].isItalic);
     }
@@ -146,15 +145,15 @@ class SheetNotifier extends ChangeNotifier {
 
   String cellData({row, col}) => _cellMatrix[row][col].data;
 
-  setCellData({data, row, col}) {
-    Cell currentCell = _cellMatrix[row][col];
-    _cellMatrix[row][col] = Cell(
-        col: col,
-        row: row,
-        isSelected: currentCell.isSelected,
-        data: data,
-        isBold: currentCell.isBold,
-        isItalic: currentCell.isItalic);
+  set setCellData(newdata) {
+    Cell newCell = Cell(
+        col: currCol,
+        row: currRow,
+        data: newdata,
+        isSelected: true,
+        isBold: _cellMatrix[currRow][currCol].isBold,
+        isItalic: _cellMatrix[currRow][currCol].isItalic);
+    _cellMatrix[currRow][currCol] = newCell;
     notifyListeners();
   }
 }
