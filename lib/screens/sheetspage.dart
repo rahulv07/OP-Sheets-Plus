@@ -7,6 +7,7 @@ import 'package:sheets_temp/providers/sheetnotifier.dart';
 import 'package:sheets_temp/widgets/cell.dart';
 import 'package:sheets_temp/widgets/header.dart';
 import 'package:table_sticky_headers/table_sticky_headers.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../constants.dart';
 
 class SheetsPage extends StatefulWidget {
@@ -37,7 +38,6 @@ class _SheetsPageState extends State<SheetsPage> {
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   void displayPersistentBottomSheet() {
     _scaffoldKey.currentState?.showBottomSheet<void>((BuildContext context) {
       SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
@@ -163,8 +163,52 @@ class _SheetsPageState extends State<SheetsPage> {
             ),
           ),
           TextButton(
-              onPressed: () {},
-              child: Icon(Icons.color_lens, color: Colors.white, size: 25)),
+            onPressed: () {
+              Color pickerColor =
+                  sheetNotifier.getColor(col: currCol, row: currRow);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Pick your Color'),
+                  content: Builder(
+                    builder: (context) => Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ColorPicker(
+                            enableAlpha: false,
+                            showLabel: false,
+                            pickerColor: pickerColor,
+                            onColorChanged: (color) {
+                              excelNotifier.setCellFontColor(
+                                color: color,
+                                col: currCol,
+                                row: currRow,
+                                isItalic: sheetNotifier.getItalicData(
+                                    col: currCol, row: currRow),
+                                isBold: sheetNotifier.getBoldData(
+                                    col: currCol, row: currRow),
+                              );
+                              sheetNotifier.setFontColor(
+                                  col: currCol, row: currRow, color: color);
+                            },
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('Select'),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: Icon(Icons.color_lens, color: Colors.white, size: 25),
+          ),
         ],
       ),
       body: SafeArea(
@@ -217,12 +261,14 @@ class _SheetsPageState extends State<SheetsPage> {
           cellDimensions:
               CellDimensions.uniform(width: kCellWidth, height: kCellHeight),
           legendCell: Cell(
-              col: 0,
-              row: 0,
-              isSelected: false,
-              data: '',
-              isBold: false,
-              isItalic: false),
+            col: 0,
+            row: 0,
+            isSelected: false,
+            data: '',
+            isBold: false,
+            isItalic: false,
+            color: Colors.white,
+          ),
         ),
       ),
     );

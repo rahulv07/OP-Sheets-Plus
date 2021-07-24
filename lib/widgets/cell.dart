@@ -9,13 +9,16 @@ class Cell extends StatelessWidget {
   final String data;
   final bool isBold;
   final bool isItalic;
-  Cell(
-      {required this.col,
-      required this.row,
-      required this.isSelected,
-      required this.data,
-      required this.isBold,
-      required this.isItalic});
+  final Color color;
+  Cell({
+    required this.col,
+    required this.row,
+    required this.isSelected,
+    required this.data,
+    required this.isBold,
+    required this.isItalic,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +34,7 @@ class Cell extends StatelessWidget {
           style: TextStyle(
             fontWeight: (isBold) ? FontWeight.bold : FontWeight.normal,
             fontStyle: (isItalic) ? FontStyle.italic : FontStyle.normal,
+            color: color,
           ),
         ),
       ),

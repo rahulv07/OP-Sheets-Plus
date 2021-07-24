@@ -40,4 +40,21 @@ class ExcelNotifier extends ChangeNotifier {
     cell.cellStyle = CellStyle(bold: isBold, italic: isItalic);
     notifyListeners();
   }
+
+  setCellFontColor({col, row, isItalic, isBold, required Color color}) {
+    var cell = _sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
+    var italic =
+        (cell.cellStyle?.isItalic == null) ? false : cell.cellStyle!.isItalic;
+    bool bold =
+        (cell.cellStyle?.isBold == null) ? false : cell.cellStyle!.isBold;
+    var r = color.red;
+    var g = color.green;
+    var b = color.blue;
+    var hexstring =
+        'FF' + r.toRadixString(16) + g.toRadixString(16) + b.toRadixString(16);
+    cell.cellStyle =
+        CellStyle(fontColorHex: hexstring, bold: bold, italic: italic);
+    notifyListeners();
+  }
 }
