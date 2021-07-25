@@ -18,11 +18,6 @@ class ExcelNotifier extends ChangeNotifier {
     _sheet = _excel['Sheet1'];
   }
 
-// set sheet(name) {
-//     _excel.link('Sheet 1', name);
-//     notifyListeners();
-//   }
-
   Sheet get getSheet => _sheet;
 
   setCellValue({col, row, value}) {
@@ -35,14 +30,54 @@ class ExcelNotifier extends ChangeNotifier {
   setCellItalic({col, row, isItalic}) {
     var cell = _sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
-    cell.cellStyle = CellStyle(italic: isItalic);
+    var bold =
+        (cell.cellStyle?.isBold == null) ? false : cell.cellStyle!.isBold;
+    var hexString = (cell.cellStyle?.fontColor == null)
+        ? 'FF000000'
+        : cell.cellStyle!.fontColor;
+    print(hexString);
+    cell.cellStyle =
+        CellStyle(italic: isItalic, bold: bold, fontColorHex: hexString);
     notifyListeners();
   }
 
   setCellBold({col, row, isBold}) {
     var cell = _sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
-    cell.cellStyle = CellStyle(bold: isBold);
+    var italic =
+        (cell.cellStyle?.isItalic == null) ? false : cell.cellStyle!.isItalic;
+    var hexString = (cell.cellStyle?.fontColor == null)
+        ? 'FF000000'
+        : cell.cellStyle!.fontColor;
+    print(hexString);
+    cell.cellStyle =
+        CellStyle(bold: isBold, italic: italic, fontColorHex: hexString);
+    notifyListeners();
+  }
+
+  setCellFontColor({col, row, required Color color}) {
+    var cell = _sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row));
+    var italic =
+        (cell.cellStyle?.isItalic == null) ? false : cell.cellStyle!.isItalic;
+    bool bold =
+        (cell.cellStyle?.isBold == null) ? false : cell.cellStyle!.isBold;
+    var r = color.red;
+    var g = color.green;
+    var b = color.blue;
+    var hexString = 'FF' +
+        ((r.toRadixString(16).length == 1)
+            ? '0' + r.toRadixString(16)
+            : r.toRadixString(16)) +
+        ((g.toRadixString(16).length == 1)
+            ? '0' + g.toRadixString(16)
+            : g.toRadixString(16)) +
+        ((b.toRadixString(16).length == 1)
+            ? '0' + b.toRadixString(16)
+            : b.toRadixString(16));
+    print(hexString);
+    cell.cellStyle =
+        CellStyle(fontColorHex: hexString, bold: bold, italic: italic);
     notifyListeners();
   }
 }
