@@ -1,14 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sheets_temp/providers/excelnotifer.dart';
 import 'package:sheets_temp/providers/sheetnotifier.dart';
+import 'package:sheets_temp/widgets/actionButtons.dart';
 import 'package:sheets_temp/widgets/cell.dart';
 import 'package:sheets_temp/widgets/header.dart';
 import 'package:table_sticky_headers/table_sticky_headers.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../constants.dart';
+import 'package:sheets_temp/widgets/bottomTextField.dart';
 
 class SheetsPage extends StatefulWidget {
   @override
@@ -20,9 +19,6 @@ class _SheetsPageState extends State<SheetsPage> {
   double _scrollOffsetY = 0.0;
   bool _firstBuild = true;
 
-  //String cellData = '';
-  bool isBold = false;
-  bool isItalic = false;
   late ScrollController _verticalTitleController,
       _verticalBodyController,
       _horizTitleController,
@@ -38,45 +34,6 @@ class _SheetsPageState extends State<SheetsPage> {
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  void displayPersistentBottomSheet() {
-    _scaffoldKey.currentState?.showBottomSheet<void>((BuildContext context) {
-      SheetNotifier sheetNotifier = Provider.of<SheetNotifier>(context);
-      ExcelNotifier excelNotifier = Provider.of<ExcelNotifier>(context);
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.10,
-        padding: EdgeInsets.all(10),
-        color: Colors.blueGrey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Enter text',
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
-                onChanged: (enteredText) {
-                  //cellData = enteredText;
-                  sheetNotifier.setCellData = enteredText;
-                  excelNotifier.setCellValue(
-                      row: sheetNotifier.currRow,
-                      col: sheetNotifier.currCol,
-                      value: enteredText);
-                },
-              ),
-            )
-          ],
-        ),
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,111 +55,24 @@ class _SheetsPageState extends State<SheetsPage> {
       appBar: AppBar(
         title: Text('${excelNotifier.getExcelName}'),
         actions: [
-          TextButton(
-            onPressed: () async {
-              var excel = excelNotifier.getExcel;
-              var value = excel.save();
-              Directory? storageDir = await getExternalStorageDirectory();
-              File file = File(
-                  storageDir!.path + '/${excelNotifier.getExcelName}.xlsx');
-              file
-                ..createSync(recursive: true)
-                ..writeAsBytesSync(value!);
-
-              if (await file.exists()) {
-                print(file.path);
-              }
-            },
-            child: Icon(Icons.save, size: 25, color: Colors.white),
-          ),
-          TextButton(
-            onPressed: () {
-              sheetNotifier.setBoldCell(col: currCol, row: currRow);
-              excelNotifier.setCellBold(
-                col: currCol,
-                row: currRow,
-                isBold: sheetNotifier.getBoldData(row: currRow, col: currCol),
-              );
-            },
-            child: Text(
-              'B',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: (_firstBuild)
-                    ? Colors.white
-                    : sheetNotifier.getBoldData(row: currRow, col: currCol)
-                        ? Colors.red
-                        : Colors.white,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              sheetNotifier.setItalicCell(col: currCol, row: currRow);
-              excelNotifier.setCellItalic(
-                col: currCol,
-                row: currRow,
-                isItalic:
-                    sheetNotifier.getItalicData(col: currCol, row: currRow),
-              );
-            },
-            child: Text(
-              'I',
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-                color: (_firstBuild)
-                    ? Colors.white
-                    : sheetNotifier.getItalicData(row: currRow, col: currCol)
-                        ? Colors.red
-                        : Colors.white,
-                fontSize: 25,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Color pickerColor =
-                  sheetNotifier.getColor(col: currCol, row: currRow);
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Pick your Color'),
-                  content: Builder(
-                    builder: (context) => Container(
-                      height: MediaQuery.of(context).size.height / 2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ColorPicker(
-                            enableAlpha: false,
-                            showLabel: false,
-                            pickerColor: pickerColor,
-                            onColorChanged: (color) {
-                              excelNotifier.setCellFontColor(
-                                color: color,
-                                col: currCol,
-                                row: currRow,
-                              );
-                              sheetNotifier.setFontColor(
-                                  col: currCol, row: currRow, color: color);
-                            },
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Select'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-            child: Icon(Icons.color_lens, color: Colors.white, size: 25),
-          ),
+          SaveButton(excelNotifier: excelNotifier),
+          BoldButton(
+              sheetNotifier: sheetNotifier,
+              currCol: currCol,
+              currRow: currRow,
+              excelNotifier: excelNotifier,
+              firstBuild: _firstBuild),
+          ItalicButton(
+              sheetNotifier: sheetNotifier,
+              currCol: currCol,
+              currRow: currRow,
+              excelNotifier: excelNotifier,
+              firstBuild: _firstBuild),
+          ColorButton(
+              sheetNotifier: sheetNotifier,
+              currCol: currCol,
+              currRow: currRow,
+              excelNotifier: excelNotifier),
         ],
       ),
       body: SafeArea(
@@ -236,9 +106,6 @@ class _SheetsPageState extends State<SheetsPage> {
                 prevCol: prevCol,
                 prevRow: prevRow,
               );
-              //cellData = sheetNotifier.cellData(col: i, row: j);
-              isBold = sheetNotifier.getBoldData(col: i, row: j);
-              isItalic = sheetNotifier.getItalicData(col: i, row: j);
             }
             //If selecting a cell for the first time in a sheet
             else {
@@ -247,7 +114,10 @@ class _SheetsPageState extends State<SheetsPage> {
             sheetNotifier.prevCol = i;
             sheetNotifier.prevRow = j;
             print('$j $i');
-            displayPersistentBottomSheet();
+            BottomTextField.displayPersistentBottomSheet(
+                scaffoldKey: _scaffoldKey,
+                sheetNotifier: sheetNotifier,
+                excelNotifier: excelNotifier);
             excelNotifier.setCellValue(
                 col: i, row: j, value: sheetNotifier.cellData(col: i, row: j));
             _firstBuild = false;

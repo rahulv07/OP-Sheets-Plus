@@ -5,7 +5,6 @@ import 'package:sheets_temp/widgets/cell.dart';
 class SheetNotifier extends ChangeNotifier {
   int _rowCount = 20;
   int _colCount = 5;
-  Color _defaultFontColor = Colors.black;
 
   setRowCount(count) {
     if (count < 20) {
@@ -57,7 +56,7 @@ class SheetNotifier extends ChangeNotifier {
             data: '',
             isBold: false,
             isItalic: false,
-            color: _defaultFontColor,
+            color: Colors.black,
           ),
         ),
       );
