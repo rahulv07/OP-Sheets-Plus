@@ -119,11 +119,10 @@ class _SheetsPageState extends State<SheetsPage> {
             onPressed: () {
               sheetNotifier.setBoldCell(col: currCol, row: currRow);
               excelNotifier.setCellBold(
-                  col: currCol,
-                  row: currRow,
-                  isBold: sheetNotifier.getBoldData(row: currRow, col: currCol),
-                  isItalic:
-                      sheetNotifier.getItalicData(col: currCol, row: currRow));
+                col: currCol,
+                row: currRow,
+                isBold: sheetNotifier.getBoldData(row: currRow, col: currCol),
+              );
             },
             child: Text(
               'B',
@@ -146,7 +145,6 @@ class _SheetsPageState extends State<SheetsPage> {
                 row: currRow,
                 isItalic:
                     sheetNotifier.getItalicData(col: currCol, row: currRow),
-                isBold: sheetNotifier.getBoldData(col: currCol, row: currRow),
               );
             },
             child: Text(
@@ -185,10 +183,6 @@ class _SheetsPageState extends State<SheetsPage> {
                                 color: color,
                                 col: currCol,
                                 row: currRow,
-                                isItalic: sheetNotifier.getItalicData(
-                                    col: currCol, row: currRow),
-                                isBold: sheetNotifier.getBoldData(
-                                    col: currCol, row: currRow),
                               );
                               sheetNotifier.setFontColor(
                                   col: currCol, row: currRow, color: color);
